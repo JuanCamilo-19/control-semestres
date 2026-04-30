@@ -1,0 +1,19 @@
+[
+  {
+    "id": "101",
+    "nombre": "juan camilo vela ",
+    "carrera": "sistemas",
+    "semestres": [
+      {
+        "periodo": "2024-I",
+        "estado": "Cursado",
+        "creditos": 0
+      },
+      {
+        "periodo": "2024-II",
+        "estado": "Cursado",
+        "creditos": 0
+      }
+    ]
+  }
+]
