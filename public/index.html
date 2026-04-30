@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Control de Semestres</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🎓 Registro de Semestres Universitarios</h1>
+    
+    <form id="studentForm">
+      <input type="text" id="id" placeholder="ID Estudiante (ej: 2024001)" required>
+      <input type="text" id="nombre" placeholder="Nombre completo" required>
+      <input type="text" id="carrera" placeholder="Carrera" required>
+      <button type="submit">💾 Guardar</button>
+    </form>
+
+    <div class="actions">
+      <button onclick="exportarExcel()">📤 Exportar Excel</button>
+      <label class="btn-import">
+        📥 Importar Excel
+        <input type="file" id="importFile" accept=".xlsx,.xls" hidden onchange="importarExcel(this)">
+      </label>
+    </div>
+
+    <table id="dataTable">
+      <thead>
+        <tr><th>ID</th><th>Nombre</th><th>Carrera</th><th>Semestres</th><th>Acciones</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

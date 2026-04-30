@@ -1,0 +1,13 @@
+* { box-sizing: border-box; font-family: system-ui, sans-serif; }
+body { background: #f5f7fa; margin: 0; padding: 20px; }
+.container { max-width: 900px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+form { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+input { padding: 10px; border: 1px solid #ccc; border-radius: 4px; flex: 1; }
+button { padding: 10px 16px; background: #0056b3; color: white; border: none; border-radius: 4px; cursor: pointer; }
+button:hover { background: #004494; }
+.actions { display: flex; gap: 10px; margin-bottom: 20px; }
+.btn-import { background: #28a745; color: white; padding: 10px 16px; border-radius: 4px; cursor: pointer; display: inline-block; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+th { background: #f1f3f5; }
+.semestre-tag { display: inline-block; background: #e3f2fd; padding: 2px 6px; margin: 2px; border-radius: 4px; font-size: 0.9em; }
