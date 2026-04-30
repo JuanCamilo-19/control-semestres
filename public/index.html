@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Control de Semestres</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -9,28 +10,69 @@
   <div class="container">
     <h1>🎓 Registro de Semestres Universitarios</h1>
     
-    <form id="studentForm">
-      <input type="text" id="id" placeholder="ID Estudiante (ej: 2024001)" required>
-      <input type="text" id="nombre" placeholder="Nombre completo" required>
-      <input type="text" id="carrera" placeholder="Carrera" required>
-      <button type="submit">💾 Guardar</button>
+    <!-- Formulario nuevo estudiante -->
+    <form id="studentForm" class="form-card">
+      <h3>➕ Nuevo Estudiante</h3>
+      <div class="form-row">
+        <input type="text" id="id" placeholder="ID (ej: 2024001)" required>
+        <input type="text" id="nombre" placeholder="Nombre completo" required>
+        <input type="text" id="carrera" placeholder="Carrera" required>
+      </div>
+      <button type="submit" class="btn-primary">💾 Guardar Estudiante</button>
     </form>
 
+    <!-- Acciones globales -->
     <div class="actions">
-      <button onclick="exportarExcel()">📤 Exportar Excel</button>
-      <label class="btn-import">
+      <button onclick="exportarExcel()" class="btn-secondary">📤 Exportar Excel</button>
+      <label class="btn-secondary btn-import">
         📥 Importar Excel
         <input type="file" id="importFile" accept=".xlsx,.xls" hidden onchange="importarExcel(this)">
       </label>
     </div>
 
+    <!-- Tabla de estudiantes -->
     <table id="dataTable">
       <thead>
-        <tr><th>ID</th><th>Nombre</th><th>Carrera</th><th>Semestres</th><th>Acciones</th></tr>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Carrera</th>
+          <th>Semestres <small>(créditos)</small></th>
+          <th>Total</th>
+          <th>Acciones</th>
+        </tr>
       </thead>
       <tbody></tbody>
     </table>
   </div>
+
+  <!-- Modal para editar semestre -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="cerrarModal()">&times;</span>
+      <h3>✏️ Editar Semestre</h3>
+      <form id="editSemesterForm">
+        <input type="hidden" id="editStudentId">
+        <input type="hidden" id="editSemesterIndex">
+        
+        <label>Periodo:</label>
+        <input type="text" id="editPeriodo" placeholder="2024-I" required>
+        
+        <label>Créditos:</label>
+        <input type="number" id="editCreditos" min="0" max="50" value="18" required>
+        
+        <label>Estado:</label>
+        <select id="editEstado" required>
+          <option value="Aprobado">✅ Aprobado</option>
+          <option value="En curso">🔄 En curso</option>
+          <option value="Retirado">❌ Retirado</option>
+        </select>
+        
+        <button type="submit" class="btn-primary">💾 Actualizar</button>
+      </form>
+    </div>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>

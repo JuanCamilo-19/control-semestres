@@ -6,13 +6,8 @@
     "semestres": [
       {
         "periodo": "2024-I",
-        "estado": "Cursado",
-        "creditos": 0
-      },
-      {
-        "periodo": "2024-II",
-        "estado": "Cursado",
-        "creditos": 0
+        "creditos": 12,
+        "estado": "Aprobado"
       }
     ]
   }
