@@ -1,0 +1,33 @@
+{
+  "estudiantes": [
+    {
+      "id": "102",
+      "nombre_completo": "juan camilo vela ",
+      "carrera": "sadasd",
+      "fecha_ingreso": "2026-06-02T05:00:00.000Z",
+      "estado_actual": "Activo",
+      "created_at": "2026-06-03T02:08:18.000Z"
+    }
+  ],
+  "semestres": [
+    {
+      "id_semestre": 1,
+      "estudiante_id": "102",
+      "periodo": "2024-I",
+      "creditos_matriculados": 10,
+      "creditos_aprobados": 0,
+      "promedio_semestral": "0.00",
+      "estado_semestre": "En Curso"
+    },
+    {
+      "id_semestre": 4,
+      "estudiante_id": "102",
+      "periodo": "2024-|",
+      "creditos_matriculados": 18,
+      "creditos_aprobados": 0,
+      "promedio_semestral": "0.00",
+      "estado_semestre": "En Curso"
+    }
+  ],
+  "materias": []
+}

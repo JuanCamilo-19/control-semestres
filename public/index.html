@@ -3,12 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Control de Semestres</title>
+  <title>Corporación Bolivariana - Control de Semestres</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <h1>🎓 Registro de Semestres Universitarios</h1>
+    <!-- Logo Institucional -->
+    <div class="institutional-header">
+      <div class="logo-container">
+        <img src="img/logo-corpobol.png" alt="CORPOBOL - Corporación Bolivariana" class="institution-logo">
+      </div>
+      <div class="institution-title">
+        <h1>CORPOBOL</h1>
+        <p class="institution-subtitle">Corporación Bolivariana<br>Esdiseños del Valle</p>
+      </div>
+    </div>
+    
+    <!-- Navegación (Pestañas) -->
+    <div class="nav-tabs">
+      <a href="index.html" class="nav-tab active">📚 Estudiantes</a>
+      <a href="backup.html" class="nav-tab">💾 Copias de Seguridad</a>
+    </div>
     
     <!-- Formulario nuevo estudiante -->
     <form id="studentForm" class="form-card">
@@ -16,7 +31,24 @@
       <div class="form-row">
         <input type="text" id="id" placeholder="ID (ej: 2024001)" required>
         <input type="text" id="nombre" placeholder="Nombre completo" required>
-        <input type="text" id="carrera" placeholder="Carrera" required>
+        <select id="carrera" required>
+          <option value=""> Selecciona una carrera...</option>
+          <option value="Ingeniería de Sistemas">Ingeniería de Sistemas</option>
+          <option value="Ingeniería Industrial">Ingeniería Industrial</option>
+          <option value="Administración de Empresas">Administración de Empresas</option>
+          <option value="Contaduría Pública">Contaduría Pública</option>
+          <option value="Derecho">Derecho</option>
+          <option value="Medicina">Medicina</option>
+          <option value="Enfermería">Enfermería</option>
+          <option value="Psicología">Psicología</option>
+          <option value="Comunicación Social">Comunicación Social</option>
+          <option value="Arquitectura">Arquitectura</option>
+          <option value="Ingeniería Civil">Ingeniería Civil</option>
+          <option value="Ingeniería Electrónica">Ingeniería Electrónica</option>
+          <option value="Economía">Economía</option>
+          <option value="Educación">Educación</option>
+          <option value="Trabajo Social">Trabajo Social</option>
+        </select>
       </div>
       <button type="submit" class="btn-primary">💾 Guardar Estudiante</button>
     </form>
@@ -26,8 +58,67 @@
       <button onclick="exportarExcel()" class="btn-secondary">📤 Exportar Excel</button>
       <label class="btn-secondary btn-import">
         📥 Importar Excel
-        <input type="file" id="importFile" accept=".xlsx,.xls" hidden onchange="importarExcel(this)">
+        <input type="file" id="importFile" accept=".xlsx,.xls" hidden>
       </label>
+    </div>
+
+    <!-- 📊 Dashboard de Estadísticas -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>👥 Total Estudiantes</h3>
+        <p id="statEstudiantes">0</p>
+      </div>
+      <div class="stat-card">
+        <h3>📚 Semestres Registrados</h3>
+        <p id="statSemestres">0</p>
+      </div>
+      <div class="stat-card">
+        <h3>✅ Créditos Aprobados</h3>
+        <p id="statCreditos">0</p>
+      </div>
+      <div class="stat-card">
+        <h3>📈 Promedio de Avance</h3>
+        <p id="statPromedio">0%</p>
+      </div>
+    </div>
+
+    <!-- 🔍 Búsqueda y Filtros -->
+    <div class="search-filters">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="🔍 Buscar por ID, nombre o carrera..." onkeyup="filtrarEstudiantes()">
+      </div>
+      
+      <div class="filters-row">
+        <div class="filter-group">
+          <label>📊 Filtrar por progreso:</label>
+          <select id="filterProgreso" onchange="filtrarEstudiantes()">
+            <option value="">Todos los estudiantes</option>
+            <option value="0">Sin semestres (0%)</option>
+            <option value="1-2">1-2 semestres (10-20%)</option>
+            <option value="3-5">3-5 semestres (30-50%)</option>
+            <option value="6-8">6-8 semestres (60-80%)</option>
+            <option value="9-10">9-10 semestres (90-100%)</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label>🔄 Ordenar por:</label>
+          <select id="sortBy" onchange="filtrarEstudiantes()">
+            <option value="id-asc">ID (A-Z)</option>
+            <option value="id-desc">ID (Z-A)</option>
+            <option value="nombre-asc">Nombre (A-Z)</option>
+            <option value="nombre-desc">Nombre (Z-A)</option>
+            <option value="progreso-asc">Progreso (Menor a Mayor)</option>
+            <option value="progreso-desc">Progreso (Mayor a Menor)</option>
+            <option value="semestres-asc">Semestres (Menor a Mayor)</option>
+            <option value="semestres-desc">Semestres (Mayor a Menor)</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="results-info" id="resultsInfo">
+        Mostrando <strong id="totalMostrados">0</strong> de <strong id="totalEstudiantes">0</strong> estudiantes
+      </div>
     </div>
 
     <!-- Tabla de estudiantes -->
@@ -39,6 +130,7 @@
           <th>Carrera</th>
           <th>Semestres <small>(créditos)</small></th>
           <th>Total</th>
+          <th>Progreso</th>
           <th>Acciones</th>
         </tr>
       </thead>
@@ -69,6 +161,64 @@
         </select>
         
         <button type="submit" class="btn-primary">💾 Actualizar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal para agregar/editar materia -->
+  <div id="modalMateria" class="modal">
+    <div class="modal-content" style="max-width: 600px;">
+      <span class="close" onclick="cerrarModalMateria()">&times;</span>
+      <h3>📚 Gestionar Materia</h3>
+      <form id="materiaForm">
+        <input type="hidden" id="materiaId">
+        <input type="hidden" id="materiaIdSemestre">
+        <input type="hidden" id="materiaIdEstudiante">
+        
+        <div class="form-row" style="flex-direction: column;">
+          <input type="text" id="materiaNombre" placeholder="Nombre de la materia" required>
+          <input type="text" id="materiaCodigo" placeholder="Código (ej: MAT-101)">
+        </div>
+        
+        <div class="form-row">
+          <input type="number" id="materiaCreditos" placeholder="Créditos" min="1" max="10" required>
+          <select id="materiaTipo" required>
+            <option value="Obligatoria">Obligatoria</option>
+            <option value="Electiva">Electiva</option>
+            <option value="Homologada">Homologada</option>
+          </select>
+        </div>
+        
+        <div class="form-row">
+          <input type="text" id="materiaGrupo" placeholder="Grupo/Sección">
+          <input type="text" id="materiaDocente" placeholder="Docente">
+        </div>
+        
+        <div class="form-row">
+          <select id="materiaModalidad">
+            <option value="Presencial">Presencial</option>
+            <option value="Virtual">Virtual</option>
+            <option value="Híbrida">Híbrida</option>
+          </select>
+          <input type="text" id="materiaHorario" placeholder="Horario (ej: Lun-Mié 8-10)">
+        </div>
+        
+        <div class="form-row">
+          <input type="number" id="materiaSemestrePlan" placeholder="Semestre del plan" min="1" max="12">
+          <input type="number" id="materiaOrden" placeholder="Orden" min="0">
+        </div>
+        
+        <div class="form-row">
+          <input type="number" id="materiaNota" placeholder="Nota final" min="0" max="5" step="0.01">
+          <select id="materiaEstado">
+            <option value="En Curso">En Curso</option>
+            <option value="Ganada">Ganada</option>
+            <option value="Perdida">Perdida</option>
+            <option value="Cancelada">Cancelada</option>
+          </select>
+        </div>
+        
+        <button type="submit" class="btn-primary">💾 Guardar Materia</button>
       </form>
     </div>
   </div>

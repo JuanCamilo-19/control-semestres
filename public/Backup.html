@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Copias de Seguridad - Control de Semestres</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>💾 Copias de Seguridad</h1>
+    
+    <!-- Navegación -->
+    <div class="nav-tabs">
+      <a href="index.html" class="nav-tab">📚 Estudiantes</a>
+      <a href="backup.html" class="nav-tab active">💾 Copias de Seguridad</a>
+    </div>
+    
+    <!-- Información -->
+    <div class="info-card">
+      <p>📌 <strong>Importante:</strong> Las copias de seguridad se crean automáticamente cada vez que guardas, editas o eliminas datos. También puedes crear una manualmente aquí.</p>
+    </div>
+
+    <!-- Sección de Backups -->
+    <div class="backup-section">
+      <div class="backup-header">
+        <h3>📋 Historial de Backups</h3>
+        <button onclick="crearBackupManual()" class="btn-primary">🔄 Crear Backup Ahora</button>
+      </div>
+      
+      <div class="backup-list" id="backupList">
+        <p style="color:#718096; font-style:italic; text-align:center; padding:20px;">Cargando backups...</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal para confirmar restauración -->
+  <div id="restoreModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="cerrarRestoreModal()">&times;</span>
+      <h3>⚠️ Confirmar Restauración</h3>
+      <p>¿Estás seguro de restaurar desde <strong id="restoreFileName"></strong>?</p>
+      <p style="font-size:0.9em; color:#718096;">
+        Se creará un backup del estado actual antes de restaurar.
+      </p>
+      <input type="hidden" id="restoreFileNameInput">
+      <div style="display:flex; gap:10px; margin-top:20px;">
+        <button onclick="confirmarRestauracion()" class="btn-danger">✅ Sí, restaurar</button>
+        <button onclick="cerrarRestoreModal()" class="btn-secondary">❌ Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

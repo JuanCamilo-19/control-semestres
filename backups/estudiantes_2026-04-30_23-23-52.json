@@ -1,0 +1,36 @@
+[
+  {
+    "id": "101",
+    "nombre": "juan camilo vela ",
+    "carrera": "enfermeria",
+    "semestres": []
+  },
+  {
+    "id": "102",
+    "nombre": "juan camilo vela ",
+    "carrera": "enfermeria",
+    "semestres": [
+      {
+        "periodo": "2025-I",
+        "creditos": 7,
+        "estado": "Aprobado"
+      },
+      {
+        "periodo": "2025-II",
+        "creditos": 18,
+        "estado": "Aprobado"
+      },
+      {
+        "periodo": "2026-I",
+        "creditos": 18,
+        "estado": "En curso"
+      }
+    ]
+  },
+  {
+    "id": "103",
+    "nombre": "juan camilo vela ",
+    "carrera": "enfermeria",
+    "semestres": []
+  }
+]

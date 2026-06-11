@@ -1,0 +1,14 @@
+{
+  "estudiantes": [
+    {
+      "id": "102",
+      "nombre_completo": "juan camilo vela ",
+      "carrera": "sadasd",
+      "fecha_ingreso": "2026-06-02T05:00:00.000Z",
+      "estado_actual": "Activo",
+      "created_at": "2026-06-03T02:08:18.000Z"
+    }
+  ],
+  "semestres": [],
+  "materias": []
+}

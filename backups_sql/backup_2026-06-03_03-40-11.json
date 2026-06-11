@@ -1,0 +1,48 @@
+{
+  "estudiantes": [
+    {
+      "id": "101",
+      "nombre_completo": "sdaasd",
+      "carrera": "sistemas",
+      "fecha_ingreso": "2026-06-02T05:00:00.000Z",
+      "estado_actual": "Activo",
+      "created_at": "2026-06-03T03:39:01.000Z"
+    },
+    {
+      "id": "102",
+      "nombre_completo": "juan camilo vela ",
+      "carrera": "sadasd",
+      "fecha_ingreso": "2026-06-02T05:00:00.000Z",
+      "estado_actual": "Activo",
+      "created_at": "2026-06-03T02:08:18.000Z"
+    },
+    {
+      "id": "123123",
+      "nombre_completo": "nicolas sanchez",
+      "carrera": "enfermeria",
+      "fecha_ingreso": "2026-06-02T05:00:00.000Z",
+      "estado_actual": "Activo",
+      "created_at": "2026-06-03T03:39:13.000Z"
+    },
+    {
+      "id": "365",
+      "nombre_completo": "ana hilia sanchez",
+      "carrera": "contabilidad",
+      "fecha_ingreso": "2026-06-02T05:00:00.000Z",
+      "estado_actual": "Activo",
+      "created_at": "2026-06-03T03:40:11.000Z"
+    }
+  ],
+  "semestres": [
+    {
+      "id_semestre": 5,
+      "estudiante_id": "102",
+      "periodo": "2024-I",
+      "creditos_matriculados": 18,
+      "creditos_aprobados": 0,
+      "promedio_semestral": "0.00",
+      "estado_semestre": "En Curso"
+    }
+  ],
+  "materias": []
+}
