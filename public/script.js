@@ -1,7 +1,7 @@
 const API = '/api';
-const SEMESTRES_ESPERADOS = 10; // ⚙️ CAMBIA ESTO según tu universidad
+const SEMESTRES_ESPERADOS = 10;
 
-// 🔍 Variables globales para búsqueda y filtros
+// Variables globales para búsqueda y filtros
 let todosLosEstudiantes = [];
 let filtroActual = {
   busqueda: '',
@@ -9,8 +9,9 @@ let filtroActual = {
   orden: 'id-asc'
 };
 let materiaEditandoId = null;
+let estudianteSeleccionado = null;
 
-// 🔢 Convierte 1→I, 2→II y normaliza el formato del periodo
+// Convierte 1→I, 2→II y normaliza el formato del periodo
 function normalizarPeriodo(periodo) {
   if (!periodo || typeof periodo !== 'string') return periodo;
   const partes = periodo.trim().split('-');
@@ -25,7 +26,7 @@ function normalizarPeriodo(periodo) {
   return `${anio}-${semestre}`;
 }
 
-// 📊 Actualizar tarjetas de estadísticas 
+// Actualizar tarjetas de estadísticas 
 function actualizarStats(est, sem, cred, prom) {
   const elEst = document.getElementById('statEstudiantes');
   const elSem = document.getElementById('statSemestres');
@@ -38,7 +39,7 @@ function actualizarStats(est, sem, cred, prom) {
   if (elProm) elProm.textContent = prom + '%';
 }
 
-// 📊 Cargar datos desde MariaDB y preparar para filtrado
+// Cargar datos desde MariaDB y preparar para filtrado
 async function cargarDatos() {
   if (!document.getElementById('dataTable')) return;
   
@@ -46,7 +47,6 @@ async function cargarDatos() {
     const res = await fetch(`${API}/estudiantes`);
     const data = await res.json();
     
-    // Procesar y guardar todos los estudiantes con cálculos pre-hechos
     todosLosEstudiantes = data.map(est => {
       const sortedSem = [...est.semestres].sort((a, b) => {
         const [anioA, numA] = a.periodo.split('-');
@@ -84,7 +84,7 @@ async function cargarDatos() {
   }
 }
 
-// 🔍 Función principal de filtrado y ordenamiento
+// Función principal de filtrado y ordenamiento
 function filtrarEstudiantes() {
   filtroActual.busqueda = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
   filtroActual.progreso = document.getElementById('filterProgreso')?.value || '';
@@ -141,7 +141,7 @@ function filtrarEstudiantes() {
   if (totalGeneral) totalGeneral.textContent = todosLosEstudiantes.length;
 }
 
-// 📊 Renderizar tabla con estudiantes filtrados
+// Renderizar tabla con estudiantes filtrados (VISTA SIMPLIFICADA)
 function renderizarTabla(estudiantes) {
   const tbody = document.querySelector('#dataTable tbody');
   if (!tbody) return;
@@ -157,57 +157,9 @@ function renderizarTabla(estudiantes) {
   let sumaProgresos = 0;
   
   tbody.innerHTML = estudiantes.map(est => {
-    const sortedSem = est._sortedSemestres || est.semestres;
-    
     totalSemestresGlobal += est.totalSemestres;
     totalCreditosAprobadosGlobal += est.creditosAprobados;
     sumaProgresos += est.progreso;
-    
-    const semHTML = sortedSem.map((s) => {
-      const creditos = s.creditos_matriculados || s.creditos || 0;
-      const estado = s.estado_semestre || s.estado || 'En Curso';
-      const estadoClass = estado.toLowerCase().replace(' ', '-');
-      
-      const materiasHTML = s.materias && s.materias.length > 0 ? `
-        <div class="materias-container">
-          ${s.materias.map(m => `
-            <div class="materia-card">
-              <div class="materia-info">
-                <div class="materia-nombre">${m.nombre_materia} ${m.codigo_materia ? `(${m.codigo_materia})` : ''}</div>
-                <div class="materia-detalles">
-                  ${m.creditos_materia} cr. • ${m.tipo_materia || 'Obligatoria'}
-                  ${m.docente ? `• ${m.docente}` : ''}
-                  ${m.nota_final !== null ? `• Nota: ${m.nota_final}` : ''}
-                </div>
-              </div>
-              <div class="materia-actions">
-                <button class="btn-warning" onclick="editarMateria(${m.id_materia}, ${s.id_semestre}, '${est.id}')">✏️</button>
-                <button class="btn-danger" onclick="eliminarMateria(${m.id_materia})">🗑️</button>
-              </div>
-            </div>
-          `).join('')}
-        </div>
-      ` : '<p style="color:#999; font-size:0.85em; margin:5px 0;">Sin materias registradas</p>';
-      
-      return `
-        <div class="semestre-card">
-          <div class="semestre-header">
-            <div class="semestre-info">
-              <div class="semestre-periodo">${s.periodo}</div>
-              <div class="semestre-detalles">${creditos} créditos • ${estado}</div>
-            </div>
-            <span class="semestre-estado estado-${estadoClass}">${estado}</span>
-          </div>
-          <div class="semestre-actions">
-            <button class="btn-warning" onclick="abrirModal('${est.id}', ${s.id_semestre}, '${s.periodo}', ${creditos}, '${estado}')">✏️ Semestre</button>
-            <button class="btn-secondary" onclick="abrirModalMateria(${s.id_semestre}, '${est.id}')">➕ Materia</button>
-            <button class="btn-danger" onclick="eliminarSemestre('${est.id}', ${s.id_semestre})">🗑️</button>
-          </div>
-          <div class="semestre-materias">
-            ${materiasHTML}
-          </div>
-        </div>`;
-    }).join('') || '<span style="color:#999">Sin registros</span>';
     
     const nombreMostrar = est.nombre_completo || est.nombre || 'Sin nombre';
     
@@ -216,7 +168,7 @@ function renderizarTabla(estudiantes) {
         <td><strong>${est.id}</strong></td>
         <td>${nombreMostrar}</td>
         <td>${est.carrera || 'N/A'}</td>
-        <td>${semHTML}</td>
+        <td>${est.totalSemestres}</td>
         <td><span class="total-creditos">${est.creditosAprobados} cr.</span></td>
         <td>
           <div class="progress-container">
@@ -225,7 +177,7 @@ function renderizarTabla(estudiantes) {
           <div class="progress-text">${est.progreso}% (${est.semestresAprobados}/${SEMESTRES_ESPERADOS})</div>
         </td>
         <td>
-          <button onclick="agregarSemestre('${est.id}')">➕ Semestre</button>
+          <button class="btn-primary" onclick="verDetalleEstudiante('${est.id}')">Ver Detalle</button>
         </td>
       </tr>`;
   }).join('');
@@ -234,7 +186,138 @@ function renderizarTabla(estudiantes) {
   actualizarStats(estudiantes.length, totalSemestresGlobal, totalCreditosAprobadosGlobal, promedioAvance);
 }
 
-// 💾 Guardar nuevo estudiante 
+// ==========================================
+// VISTA DETALLADA DEL ESTUDIANTE
+// ==========================================
+
+// Mostrar vista detallada de un estudiante
+function verDetalleEstudiante(id) {
+  const estudiante = todosLosEstudiantes.find(e => e.id === id);
+  if (!estudiante) return;
+  
+  estudianteSeleccionado = estudiante;
+  
+  // Ocultar lista y mostrar vista detallada
+  document.getElementById('listaEstudiantes').style.display = 'none';
+  document.getElementById('vistaDetallada').style.display = 'block';
+  
+  // Llenar información del estudiante
+  document.getElementById('detalleNombre').textContent = estudiante.nombre_completo || estudiante.nombre;
+  document.getElementById('detalleID').textContent = 'ID: ' + estudiante.id;
+  document.getElementById('detalleCarrera').textContent = estudiante.carrera || 'N/A';
+  document.getElementById('detalleSemestres').textContent = estudiante.totalSemestres;
+  document.getElementById('detalleCreditos').textContent = estudiante.creditosAprobados;
+  document.getElementById('detalleProgreso').textContent = estudiante.progreso + '%';
+  
+  // Renderizar semestres
+  renderizarSemestresDetalle(estudiante);
+}
+
+// Renderizar semestres en la vista detallada (CORREGIDO)
+function renderizarSemestresDetalle(estudiante) {
+  const container = document.getElementById('semestresContainer');
+  const semestres = estudiante._sortedSemestres || estudiante.semestres;
+  
+  if (semestres.length === 0) {
+    container.innerHTML = '<p class="sin-materias">Este estudiante aún no tiene semestres registrados</p>';
+    return;
+  }
+  
+  container.innerHTML = semestres.map(s => {
+    const creditos = s.creditos_matriculados || s.creditos || 0;
+    const estado = s.estado_semestre || s.estado || 'En Curso';
+    const estadoClass = estado.toLowerCase().replace(' ', '-');
+    
+    // Verificar si el semestre está "En Curso" para mostrar los botones
+    const esEnCurso = estado.toLowerCase() === 'en curso';
+    
+    // Botón de agregar materia (solo si está en curso)
+    const botonAgregarMateria = esEnCurso ? `
+      <button class="btn-primary" onclick="abrirModalMateria(${s.id_semestre}, '${estudiante.id}')">Agregar Materia</button>
+    ` : '';
+    
+    // Renderizar materias
+    let materiasHTML = '';
+    
+    if (s.materias && s.materias.length > 0) {
+      materiasHTML = `
+        <div class="materias-section">
+          <div class="materias-header">
+            <h4>Materias (${s.materias.length})</h4>
+            ${botonAgregarMateria}
+          </div>
+          <div class="materias-grid">
+            ${s.materias.map(m => `
+              <div class="materia-card-detalle">
+                <div class="materia-nombre-detalle">${m.nombre_materia} ${m.codigo_materia ? `(${m.codigo_materia})` : ''}</div>
+                <div class="materia-info-detalle">
+                  ${m.creditos_materia} créditos • ${m.tipo_materia || 'Obligatoria'}
+                  ${m.docente ? `<br>Docente: ${m.docente}` : ''}
+                  ${m.nota_final !== null ? `<br>Nota: ${m.nota_final}` : ''}
+                </div>
+                <div class="materia-actions-detalle">
+                  ${esEnCurso ? `
+                    <button class="btn-warning" onclick="editarMateria(${m.id_materia}, ${s.id_semestre}, '${estudiante.id}')">Editar</button>
+                    <button class="btn-danger" onclick="eliminarMateria(${m.id_materia})">Eliminar</button>
+                  ` : '<span style="color:#718096; font-size:0.85em;">Semestre finalizado</span>'}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    } else {
+      // No hay materias - mostrar sección con botón si está en curso
+      materiasHTML = `
+        <div class="materias-section">
+          <div class="materias-header">
+            <h4>Materias (0)</h4>
+            ${botonAgregarMateria}
+          </div>
+          <p class="sin-materias">Sin materias registradas</p>
+        </div>
+      `;
+    }
+    
+    return `
+      <div class="semestre-card-detalle">
+        <div class="semestre-header-detalle">
+          <div>
+            <div class="semestre-periodo-detalle">${s.periodo}</div>
+            <div class="semestre-info-detalle">
+              <span>${creditos} créditos</span>
+              <span class="semestre-estado estado-${estadoClass}">${estado}</span>
+            </div>
+          </div>
+          <div class="semestre-actions-detalle">
+            <button class="btn-warning" onclick="abrirModal('${estudiante.id}', ${s.id_semestre}, '${s.periodo}', ${creditos}, '${estado}')">Editar Semestre</button>
+            <button class="btn-danger" onclick="eliminarSemestre('${estudiante.id}', ${s.id_semestre})">Eliminar</button>
+          </div>
+        </div>
+        ${materiasHTML}
+      </div>
+    `;
+  }).join('');
+}
+
+// Volver a la lista de estudiantes
+function volverALista() {
+  document.getElementById('vistaDetallada').style.display = 'none';
+  document.getElementById('listaEstudiantes').style.display = 'block';
+  estudianteSeleccionado = null;
+}
+
+// Agregar semestre desde la vista detallada
+function agregarSemestreDesdeDetalle() {
+  if (!estudianteSeleccionado) return;
+  agregarSemestre(estudianteSeleccionado.id);
+}
+
+// ==========================================
+// FUNCIONES EXISTENTES (SIN EMOJIS)
+// ==========================================
+
+// Guardar nuevo estudiante 
 const studentForm = document.getElementById('studentForm');
 if (studentForm) {
   studentForm.addEventListener('submit', async e => {
@@ -256,28 +339,28 @@ if (studentForm) {
       
       if (!res.ok) throw new Error(result.error);
       
-      alert('✅ ' + result.message);
+      alert('Estudiante guardado correctamente');
       cargarDatos();
       e.target.reset();
     } catch (err) {
-      alert('❌ Error: ' + err.message);
+      alert('Error: ' + err.message);
     }
   });
 }
 
-// ➕ Agregar nuevo semestre (CON VALIDACIÓN CRONOLÓGICA)
+// Agregar nuevo semestre (CON VALIDACIÓN CRONOLÓGICA)
 async function agregarSemestre(id) {
-  const periodoInput = prompt(`📅 Agregar semestre\nEscribe el periodo (ej: 2024-1, 2024-I, 2025-2):\n\n⚠️ Debe ser consecutivo al último registrado.`);
+  const periodoInput = prompt(`Agregar semestre\nEscribe el periodo (ej: 2024-1, 2024-I, 2025-2):\n\nDebe ser consecutivo al último registrado.`);
   if (!periodoInput) return;
 
   const periodo = normalizarPeriodo(periodoInput);
   
-  const creditosInput = prompt(`💳 Créditos para ${periodo}:`, "18");
+  const creditosInput = prompt(`Créditos para ${periodo}:`, "18");
   if (creditosInput === null) return;
   
   const creditos = creditosInput.trim() === "" ? 18 : parseInt(creditosInput);
   if (isNaN(creditos) || creditos < 0) {
-    alert('❌ Créditos inválidos. Debe ser un número mayor o igual a 0');
+    alert('Créditos inválidos. Debe ser un número mayor o igual a 0');
     return;
   }
 
@@ -290,13 +373,20 @@ async function agregarSemestre(id) {
     const result = await res.json();
     
     if (!res.ok) throw new Error(result.error);
-    cargarDatos();
+    
+    // Si estamos en vista detallada, recargar esa vista
+    if (estudianteSeleccionado && estudianteSeleccionado.id === id) {
+      await cargarDatos();
+      verDetalleEstudiante(id);
+    } else {
+      cargarDatos();
+    }
   } catch (err) {
-    alert('⛔ ' + err.message);
+    alert('Error: ' + err.message);
   }
 }
 
-// ✏️ Abrir modal para editar semestre
+// Abrir modal para editar semestre
 function abrirModal(studentId, idSemestre, periodo, creditos, estado) {
   document.getElementById('editStudentId').value = studentId;
   document.getElementById('editSemesterIndex').value = idSemestre;
@@ -306,13 +396,13 @@ function abrirModal(studentId, idSemestre, periodo, creditos, estado) {
   document.getElementById('editModal').style.display = 'block';
 }
 
-// ❌ Cerrar modal de edición
+// Cerrar modal de edición
 function cerrarModal() {
   const modal = document.getElementById('editModal');
   if (modal) modal.style.display = 'none';
 }
 
-// 💾 Guardar edición de semestre
+// Guardar edición de semestre
 const editSemesterForm = document.getElementById('editSemesterForm');
 if (editSemesterForm) {
   editSemesterForm.addEventListener('submit', async e => {
@@ -335,15 +425,23 @@ if (editSemesterForm) {
       if (!res.ok) throw new Error(result.error);
       
       cerrarModal();
-      cargarDatos();
-      alert('✅ Semestre actualizado en MariaDB');
+      
+      // Si estamos en vista detallada, recargar esa vista
+      if (estudianteSeleccionado && estudianteSeleccionado.id === studentId) {
+        await cargarDatos();
+        verDetalleEstudiante(studentId);
+      } else {
+        cargarDatos();
+      }
+      
+      alert('Semestre actualizado correctamente');
     } catch (err) {
-      alert('❌ Error: ' + err.message);
+      alert('Error: ' + err.message);
     }
   });
 }
 
-// 🗑️ Eliminar semestre
+// Eliminar semestre
 async function eliminarSemestre(studentId, idSemestre) {
   if (!confirm('¿Estás seguro de eliminar este semestre?')) return;
   
@@ -355,24 +453,31 @@ async function eliminarSemestre(studentId, idSemestre) {
     
     if (!res.ok) throw new Error(result.error);
     
-    cargarDatos();
-    alert('✅ Semestre eliminado de MariaDB');
+    // Si estamos en vista detallada, recargar esa vista
+    if (estudianteSeleccionado && estudianteSeleccionado.id === studentId) {
+      await cargarDatos();
+      verDetalleEstudiante(studentId);
+    } else {
+      cargarDatos();
+    }
+    
+    alert('Semestre eliminado correctamente');
   } catch (err) {
-    alert('❌ Error: ' + err.message);
+    alert('Error: ' + err.message);
   }
 }
 
-// 📤 Exportar a Excel
+// Exportar a Excel
 async function exportarExcel() { 
   window.open(`${API}/export`, '_blank'); 
 }
 
-// 📥 Importar desde Excel
+// Importar desde Excel
 const importFile = document.getElementById('importFile');
 if (importFile) {
   importFile.addEventListener('change', async function(e) {
     if (!e.target.files[0]) return;
-    if (!confirm('⚠️ Esto reemplazará todos los datos actuales. ¿Continuar?')) {
+    if (!confirm('Esto reemplazará todos los datos actuales. ¿Continuar?')) {
       e.target.value = '';
       return;
     }
@@ -383,17 +488,17 @@ if (importFile) {
     try {
       const res = await fetch(`${API}/import`, { method: 'POST', body: form });
       const data = await res.json();
-      alert('✅ ' + data.message);
+      alert(data.message);
       cargarDatos();
     } catch (err) {
-      alert('❌ Error al importar');
+      alert('Error al importar');
     }
     e.target.value = '';
   });
 }
 
 // ============================================
-// 💾 FUNCIONES DE BACKUP
+// FUNCIONES DE BACKUP (SIN EMOJIS)
 // ============================================
 
 async function crearBackupManual() {
@@ -403,10 +508,10 @@ async function crearBackupManual() {
     
     if (!res.ok) throw new Error(data.error);
     
-    alert('✅ ' + data.message);
+    alert(data.message);
     cargarBackups();
   } catch (err) {
-    alert('❌ Error: ' + err.message);
+    alert('Error: ' + err.message);
   }
 }
 
@@ -427,10 +532,10 @@ async function cargarBackups() {
       <div class="backup-item">
         <div class="backup-info">
           <div class="backup-name">${b.nombre}</div>
-          <div class="backup-meta">📅 ${b.fecha} • 💾 ${b.tamaño}</div>
+          <div class="backup-meta">${b.fecha} • ${b.tamaño}</div>
         </div>
         <div class="backup-actions">
-          <button class="btn-warning" onclick="abrirRestoreModal('${b.nombre}')">🔄 Restaurar</button>
+          <button class="btn-warning" onclick="abrirRestoreModal('${b.nombre}')">Restaurar</button>
         </div>
       </div>
     `).join('');
@@ -469,34 +574,34 @@ async function confirmarRestauracion() {
     
     if (!res.ok) throw new Error(data.error);
     
-    alert('✅ ' + data.message + '\n\nLa página se recargará para aplicar los cambios.');
+    alert(data.message + '\n\nLa página se recargará para aplicar los cambios.');
     location.reload();
   } catch (err) {
-    alert('❌ Error: ' + err.message);
+    alert('Error: ' + err.message);
   }
 }
 
 // ============================================
-// 🆕 FUNCIONES PARA GESTIÓN DE MATERIAS
+// FUNCIONES PARA GESTIÓN DE MATERIAS (SIN EMOJIS)
 // ============================================
 
-// ➕ Abrir modal para agregar materia
+// Abrir modal para agregar materia
 function abrirModalMateria(idSemestre, idEstudiante) {
-  materiaEditandoId = null; // ✅ IMPORTANTE: Resetear variable
-  document.getElementById('materiaId').value = ''; // ✅ Limpiar ID oculto
+  materiaEditandoId = null;
+  document.getElementById('materiaId').value = '';
   document.getElementById('materiaIdSemestre').value = idSemestre;
   document.getElementById('materiaIdEstudiante').value = idEstudiante;
   document.getElementById('materiaForm').reset();
   document.getElementById('modalMateria').style.display = 'block';
 }
 
-// ❌ Cerrar modal de materia
+// Cerrar modal de materia
 function cerrarModalMateria() {
   document.getElementById('modalMateria').style.display = 'none';
-  materiaEditandoId = null; // ✅ Resetear variable al cerrar
+  materiaEditandoId = null;
 }
 
-// 💾 Guardar materia (crear o editar)
+// Guardar materia (crear o editar)
 document.getElementById('materiaForm')?.addEventListener('submit', async e => {
   e.preventDefault();
   
@@ -540,14 +645,22 @@ document.getElementById('materiaForm')?.addEventListener('submit', async e => {
     if (!res.ok) throw new Error(result.error);
     
     cerrarModalMateria();
-    cargarDatos();
-    alert(idMateria ? '✅ Materia actualizada' : '✅ Materia agregada');
+    
+    // Si estamos en vista detallada, recargar esa vista
+    if (estudianteSeleccionado && estudianteSeleccionado.id === idEstudiante) {
+      await cargarDatos();
+      verDetalleEstudiante(idEstudiante);
+    } else {
+      cargarDatos();
+    }
+    
+    alert(idMateria ? 'Materia actualizada correctamente' : 'Materia agregada correctamente');
   } catch (err) {
-    alert('❌ Error: ' + err.message);
+    alert('Error: ' + err.message);
   }
 });
 
-// ✏️ Editar materia existente
+// Editar materia existente
 async function editarMateria(idMateria, idSemestre, idEstudiante) {
   try {
     const res = await fetch(`${API}/materias/${idMateria}`);
@@ -555,7 +668,7 @@ async function editarMateria(idMateria, idSemestre, idEstudiante) {
     
     const materia = await res.json();
     
-    materiaEditandoId = idMateria; // ✅ Marcar que estamos editando
+    materiaEditandoId = idMateria;
     document.getElementById('materiaId').value = materia.id_materia;
     document.getElementById('materiaIdSemestre').value = materia.semestre_id;
     document.getElementById('materiaIdEstudiante').value = idEstudiante;
@@ -574,11 +687,11 @@ async function editarMateria(idMateria, idSemestre, idEstudiante) {
     
     document.getElementById('modalMateria').style.display = 'block';
   } catch (err) {
-    alert('❌ Error: ' + err.message);
+    alert('Error: ' + err.message);
   }
 }
 
-// 🗑️ Eliminar materia
+// Eliminar materia
 async function eliminarMateria(idMateria) {
   if (!confirm('¿Estás seguro de eliminar esta materia?')) return;
   
@@ -590,15 +703,22 @@ async function eliminarMateria(idMateria) {
     
     if (!res.ok) throw new Error(result.error);
     
-    cargarDatos();
-    alert('✅ Materia eliminada');
+    // Si estamos en vista detallada, recargar esa vista
+    if (estudianteSeleccionado) {
+      await cargarDatos();
+      verDetalleEstudiante(estudianteSeleccionado.id);
+    } else {
+      cargarDatos();
+    }
+    
+    alert('Materia eliminada correctamente');
   } catch (err) {
-    alert('❌ Error: ' + err.message);
+    alert('Error: ' + err.message);
   }
 }
 
 // ============================================
-// 🔄 EVENTOS GLOBALES
+// EVENTOS GLOBALES
 // ============================================
 
 window.onclick = function(event) {
@@ -608,10 +728,162 @@ window.onclick = function(event) {
   
   if (editModal && event.target === editModal) cerrarModal();
   if (restoreModal && event.target === restoreModal) cerrarRestoreModal();
-  if (modalMateria && event.target === modalMateria) cerrarModalMateria(); // ✅ Cerrar modal de materia al hacer clic fuera
+  if (modalMateria && event.target === modalMateria) cerrarModalMateria();
 }
 
-// 🚀 Inicializar al cargar la página
+// ==========================================
+// CHATBOT CORPOBOL - FUNCIONES
+// ==========================================
+
+let chatbotOpen = false;
+let chatbotAPI = 'http://localhost:5000';
+
+// Abrir/cerrar chatbot
+function toggleChatbot() {
+  const chatWindow = document.getElementById('chatbot-window');
+  const badge = document.getElementById('chatbot-badge');
+  
+  chatbotOpen = !chatbotOpen;
+  
+  if (chatbotOpen) {
+    chatWindow.style.display = 'flex';
+    badge.style.display = 'none';
+    document.getElementById('chatbot-input').focus();
+  } else {
+    chatWindow.style.display = 'none';
+  }
+}
+
+// Manejar tecla Enter
+function handleChatbotKeypress(event) {
+  if (event.key === 'Enter') {
+    sendMessage();
+  }
+}
+
+// Enviar mensaje
+async function sendMessage() {
+  const input = document.getElementById('chatbot-input');
+  const message = input.value.trim();
+  
+  if (!message) return;
+  
+  // Agregar mensaje del usuario
+  addMessage(message, 'user');
+  input.value = '';
+  
+  // Mostrar indicador de escritura
+  showTypingIndicator();
+  
+  try {
+    // Llamar al microservicio Python
+    const response = await fetch(`${chatbotAPI}/chatbot/pregunta`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ pregunta: message })
+    });
+    
+    const data = await response.json();
+    
+    // Ocultar indicador
+    hideTypingIndicator();
+    
+    // Agregar respuesta del bot
+    if (data.encontrado) {
+      addMessage(data.respuesta, 'bot');
+      
+      // LÓGICA INTELIGENTE: Solo mostrar link si es para OTRA página
+      if (data.link && data.link !== null && data.link !== 'null') {
+        const currentPage = window.location.pathname;
+        
+        // Verificar si el link es para una página diferente
+        const esPaginaDiferente = !currentPage.includes('index.html') && 
+                                  currentPage !== '/' && 
+                                  !currentPage.includes(data.link);
+        
+        // Solo mostrar el link si NO estamos en esa página
+        if (esPaginaDiferente || (currentPage.includes('index.html') && data.link !== 'index.html')) {
+          setTimeout(() => {
+            const nombrePagina = data.link.replace('.html', '').replace('/', '');
+            addMessage(`💡 Esta acción se realiza en la sección <strong>"${nombrePagina}"</strong>. <a href="${data.link}" style="color: #C41E3A; font-weight: bold; text-decoration: underline;">Haz clic aquí para ir</a>`, 'bot', true);
+          }, 500);
+        }
+      }
+    } else {
+      addMessage(data.respuesta, 'bot');
+    }
+    
+  } catch (error) {
+    console.error('Error del chatbot:', error);
+    hideTypingIndicator();
+    addMessage('Lo siento, tuve un problema de conexión. ¿Puedes intentar de nuevo?', 'bot');
+  }
+}
+
+// Agregar mensaje al chat
+function addMessage(text, sender, isHTML = false) {
+  const messagesContainer = document.getElementById('chatbot-messages');
+  const messageDiv = document.createElement('div');
+  messageDiv.className = `message ${sender}-message`;
+  
+  const time = new Date().toLocaleTimeString('es-ES', { 
+    hour: '2-digit', 
+    minute: '2-digit' 
+  });
+  
+  if (isHTML) {
+    messageDiv.innerHTML = `
+      <div class="message-content">${text}</div>
+      <div class="message-time">${time}</div>
+    `;
+  } else {
+    messageDiv.innerHTML = `
+      <div class="message-content">${escapeHtml(text)}</div>
+      <div class="message-time">${time}</div>
+    `;
+  }
+  
+  messagesContainer.appendChild(messageDiv);
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+// Mostrar indicador de escritura
+function showTypingIndicator() {
+  const messagesContainer = document.getElementById('chatbot-messages');
+  const typingDiv = document.createElement('div');
+  typingDiv.className = 'message bot-message';
+  typingDiv.id = 'typing-indicator';
+  
+  typingDiv.innerHTML = `
+    <div class="typing-indicator">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  `;
+  
+  messagesContainer.appendChild(typingDiv);
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+// Ocultar indicador de escritura
+function hideTypingIndicator() {
+  const typingIndicator = document.getElementById('typing-indicator');
+  if (typingIndicator) {
+    typingIndicator.remove();
+  }
+}
+
+// Escapar HTML para seguridad
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// Inicializar al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
   cargarDatos();
   cargarBackups();

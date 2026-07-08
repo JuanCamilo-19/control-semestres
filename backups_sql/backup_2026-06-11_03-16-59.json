@@ -1,0 +1,117 @@
+{
+  "estudiantes": [
+    {
+      "id": "101",
+      "nombre_completo": "sdaasd",
+      "carrera": "sistemas",
+      "fecha_ingreso": "2026-06-02T05:00:00.000Z",
+      "estado_actual": "Activo",
+      "created_at": "2026-06-03T03:39:01.000Z"
+    },
+    {
+      "id": "101123",
+      "nombre_completo": "juan camilo vela ",
+      "carrera": "Ingeniería de Sistemas",
+      "fecha_ingreso": "2026-06-10T05:00:00.000Z",
+      "estado_actual": "Activo",
+      "created_at": "2026-06-10T20:36:17.000Z"
+    },
+    {
+      "id": "10112312",
+      "nombre_completo": "nicolas sanchez",
+      "carrera": "Educación",
+      "fecha_ingreso": "2026-06-10T05:00:00.000Z",
+      "estado_actual": "Activo",
+      "created_at": "2026-06-10T21:19:43.000Z"
+    },
+    {
+      "id": "102",
+      "nombre_completo": "juan camilo vela ",
+      "carrera": "sadasd",
+      "fecha_ingreso": "2026-06-02T05:00:00.000Z",
+      "estado_actual": "Activo",
+      "created_at": "2026-06-03T02:08:18.000Z"
+    },
+    {
+      "id": "123123",
+      "nombre_completo": "nicolas sanchez",
+      "carrera": "enfermeria",
+      "fecha_ingreso": "2026-06-02T05:00:00.000Z",
+      "estado_actual": "Activo",
+      "created_at": "2026-06-03T03:39:13.000Z"
+    },
+    {
+      "id": "365",
+      "nombre_completo": "ana hilia sanchez",
+      "carrera": "contabilidad",
+      "fecha_ingreso": "2026-06-02T05:00:00.000Z",
+      "estado_actual": "Activo",
+      "created_at": "2026-06-03T03:40:11.000Z"
+    }
+  ],
+  "semestres": [
+    {
+      "id_semestre": 5,
+      "estudiante_id": "102",
+      "periodo": "2024-I",
+      "creditos_matriculados": 18,
+      "creditos_aprobados": 0,
+      "promedio_semestral": "0.00",
+      "estado_semestre": "Retirado"
+    },
+    {
+      "id_semestre": 6,
+      "estudiante_id": "123123",
+      "periodo": "2024-II",
+      "creditos_matriculados": 18,
+      "creditos_aprobados": 0,
+      "promedio_semestral": "0.00",
+      "estado_semestre": "En Curso"
+    },
+    {
+      "id_semestre": 7,
+      "estudiante_id": "101",
+      "periodo": "2025-I",
+      "creditos_matriculados": 18,
+      "creditos_aprobados": 0,
+      "promedio_semestral": "0.00",
+      "estado_semestre": "Aprobado"
+    },
+    {
+      "id_semestre": 8,
+      "estudiante_id": "101",
+      "periodo": "2025-II",
+      "creditos_matriculados": 12,
+      "creditos_aprobados": 0,
+      "promedio_semestral": "0.00",
+      "estado_semestre": "En Curso"
+    },
+    {
+      "id_semestre": 9,
+      "estudiante_id": "101",
+      "periodo": "2026-I",
+      "creditos_matriculados": 10,
+      "creditos_aprobados": 0,
+      "promedio_semestral": "0.00",
+      "estado_semestre": "En Curso"
+    }
+  ],
+  "materias": [
+    {
+      "id_materia": 1,
+      "semestre_id": 7,
+      "nombre_materia": "calculo",
+      "codigo_materia": "123",
+      "grupo": "s5AD",
+      "docente": "juan carlos rivera",
+      "modalidad": "Presencial",
+      "horario": null,
+      "semestre_plan": null,
+      "creditos_materia": 5,
+      "tipo_materia": "Obligatoria",
+      "orden": 10,
+      "nota_final": null,
+      "estado_materia": "En Curso"
+    }
+  ]
+}
